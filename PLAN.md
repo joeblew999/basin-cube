@@ -6,7 +6,7 @@ Prove that cliftonc's code works for us, on our Cloudflare account: drizzle-cube
 
 | # | Proof | Status |
 |---|---|---|
-| 1 | drizzle-cube works on D1 | **Proved** 23 Oct 2026: 7/7 locally and at https://d1-cube-check.gedw99.workers.dev |
+| 1 | drizzle-cube works on D1 | **Proved** 23 Oct 2026: 7/7 locally and at https://basin-cube.gedw99.workers.dev |
 | 2 | icelight works unchanged on our account | **Proved** 23 Oct 2026: deployed from zero without prompts, 83,045 events through his cube API on Basin |
 | 3 | Both together: one Worker and one UI query live data in D1 and history in Basin, through drizzle-cube | Next |
 
@@ -22,7 +22,7 @@ Using the existing clone `~/workspace/go/src/github.com/cliftonc/icelight` at co
 
 1. The UI, drizzle-cube's components, gets a live/history switch: live points at this Worker, history straight at `icelight-query-api` (its API allows any site by default). No Worker changes.
 2. Locking history down (an `API_TOKEN` and a forwarding route in this Worker) comes after the proof.
-3. Proved when https://d1-cube-check.gedw99.workers.dev answers live queries from D1 and history queries from Basin.
+3. Proved when https://basin-cube.gedw99.workers.dev answers live queries from D1 and history queries from Basin.
 
 ## Not in this proof
 

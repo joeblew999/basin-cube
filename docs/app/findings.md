@@ -19,6 +19,6 @@ Notes:
 - drizzle-cube returns rows at `results[0].data`, not `data`. The first run reported 5 failures because the check script (now `test/checks.ts`) read the wrong field; that is fixed.
 - D1 isn't mentioned anywhere in drizzle-cube. Its SQLite executor is written for better-sqlite3, which is synchronous. Normal queries work anyway, and numbers come back as numbers.
 - **EXPLAIN is broken on D1, quietly.** `POST /cubejs-api/v1/explain` answers 200 with the right SQL but an empty plan (`operations: []`, no indexes). D1 itself reports `SEARCH bookings USING INDEX bookings_org_booked_at` for the same query. The SQLite executor calls `db.all()` as if it were synchronous, as better-sqlite3 is, so on D1 it reads no rows. It's a diagnostic, not used by normal queries. `/dry-run` works.
-- **Deployed:** all 7 pass on Cloudflare at https://d1-cube-check.gedw99.workers.dev . Demo data only, because the tenant header isn't auth.
+- **Deployed:** all 7 pass on Cloudflare (the Worker was then named d1-cube-check; it's now basin-cube). Demo data only, because the tenant header isn't auth.
 - drizzle-cube's React client imports two optional peers at module level, so a Vite build fails until you install them: `@nivo/heatmap` and `react-grid-layout`. icelight's UI installs them for the same reason. npm doesn't install optional peers either, so this isn't caused by aube.
 - The UI's AnalysisBuilder works in the browser: queries, chart and table, and switching organisation changes the numbers (org-a: Nok 600, Remy 1200).

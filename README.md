@@ -1,4 +1,4 @@
-# d1-cube-check
+# basin-cube
 
 ## Why this repo exists
 
@@ -13,7 +13,7 @@ All our projects will keep their analytics on **Cloudflare Basin** (Pipelines in
 
 | | Proof | Status |
 |---|---|---|
-| 1 | drizzle-cube works on D1 | **Proved**: 7/7 checks locally and at https://d1-cube-check.gedw99.workers.dev |
+| 1 | drizzle-cube works on D1 | **Proved**: 7/7 checks locally and at https://basin-cube.gedw99.workers.dev |
 | 2 | icelight works unchanged on our account | **Proved**: deployed from zero with no prompts; 83,045 events through his cube API on Basin |
 | 3 | One Worker and UI query live data (D1) and history (Basin) together | Next |
 
@@ -63,7 +63,7 @@ The UI is drizzle-cube's query builder. The buttons top right switch organisatio
 
 ```
 workers/
-  app/        this repo's Worker (d1-cube-check): src/, ui/, migrations/, test/checks.ts, wrangler.jsonc
+  app/        this repo's Worker (basin-cube): src/, ui/, migrations/, test/checks.ts, wrangler.jsonc
   icelight/   cliftonc's repo, cloned unchanged at a pinned commit (git-ignored)
 mise-tasks/
   app/  icelight/  aube/    one file per task, named after the Worker it works on

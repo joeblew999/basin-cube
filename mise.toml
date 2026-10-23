@@ -1,4 +1,4 @@
-# d1-cube-check: proves cliftonc's drizzle-cube (on D1) and icelight (on Basin) work for us, unchanged.
+# basin-cube: proves cliftonc's drizzle-cube (on D1) and icelight (on Basin) work for us, unchanged.
 #
 # The rules for every task here. Follow them for anything new, so nobody has to refactor again:
 #
@@ -46,10 +46,11 @@ usage = "7.0.1"  # tab-completion and --help for tasks and their flags (#USAGE l
 [env]
 # This repo's Worker (the app component), in workers/app
 APP_DIR = "workers/app"
+APP_NAME = "basin-cube"                                       # the Worker and its D1 database; workers/app/wrangler.jsonc must match
 WORKER_PORT = "8787"                                          # app:dev
 WORKER_URL = "http://localhost:{{env.WORKER_PORT}}"
 WORKER_TEST_PORT = "8788"                                     # app:test's temporary Worker, so it works next to app:dev
-WORKER_PROD_URL = "https://d1-cube-check.gedw99.workers.dev"  # app:deploy
+WORKER_PROD_URL = "https://{{env.APP_NAME}}.gedw99.workers.dev"  # app:deploy
 # cliftonc's icelight, cloned unchanged into workers/icelight
 ICELIGHT_DIR = "workers/icelight"
 ICELIGHT_REF = "901cfdc"
@@ -87,5 +88,5 @@ run = [{ task = "cloudflare:status" }, { task = "app:status" }, { task = "icelig
 
 [tasks."6:teardown"]
 description = "Remove everything from Cloudflare, in order: icelight (its resources, data and token), then app (its Worker and D1 database)"
-confirm = "Remove icelight, its token, the d1-cube-check Worker and its D1 database from Cloudflare?"
+confirm = "Remove icelight, its token, the basin-cube Worker and its D1 database from Cloudflare?"
 run = [{ task = "icelight:teardown" }, { task = "app:teardown" }]

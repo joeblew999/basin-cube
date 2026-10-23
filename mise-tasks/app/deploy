@@ -5,14 +5,14 @@
 #MISE dir="{{env.APP_DIR}}"
 #MISE depends=["app:build"]
 set -euo pipefail
-db_id() { aube exec wrangler d1 list --json 2>/dev/null | jq -r '.[] | select(.name == "d1-cube-check") | .uuid'; }
+db_id() { aube exec wrangler d1 list --json 2>/dev/null | jq -r '.[] | select(.name == env.APP_NAME) | .uuid'; }
 id=$(db_id)
 if [ -z "$id" ]; then
-  aube exec wrangler d1 create d1-cube-check > /dev/null
+  aube exec wrangler d1 create "$APP_NAME" > /dev/null
   id=$(db_id)
-  echo "created D1 database d1-cube-check ($id)"
+  echo "created D1 database $APP_NAME ($id)"
 fi
 sed -i '' -E "s/\"database_id\": \"[^\"]*\"/\"database_id\": \"$id\"/" wrangler.jsonc
-CI=1 aube exec wrangler d1 migrations apply d1-cube-check --remote
+CI=1 aube exec wrangler d1 migrations apply "$APP_NAME" --remote
 aube exec wrangler deploy
 echo "deployed: $WORKER_PROD_URL   test it: mise run app:test --prod"

@@ -7,11 +7,11 @@ set -euo pipefail
 if aube exec wrangler deployments list > /dev/null 2>&1; then
   CI=1 aube exec wrangler delete --force
 else
-  echo "Worker d1-cube-check: already gone"
+  echo "Worker $APP_NAME: already gone"
 fi
-if aube exec wrangler d1 list --json 2>/dev/null | jq -e '.[] | select(.name == "d1-cube-check")' > /dev/null; then
-  CI=1 aube exec wrangler d1 delete d1-cube-check --skip-confirmation
+if aube exec wrangler d1 list --json 2>/dev/null | jq -e '.[] | select(.name == env.APP_NAME)' > /dev/null; then
+  CI=1 aube exec wrangler d1 delete "$APP_NAME" --skip-confirmation
 else
-  echo "D1 database d1-cube-check: already gone"
+  echo "D1 database $APP_NAME: already gone"
 fi
 echo "check: $CF_DASH_URL/workers-and-pages   $CF_DASH_URL/workers/d1"

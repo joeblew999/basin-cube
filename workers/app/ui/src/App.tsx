@@ -12,7 +12,7 @@ export function App() {
   return (
     <>
       <header className="bar">
-        <strong>d1-cube-check</strong>
+        <strong>basin-cube</strong>
         <span className="muted">drizzle-cube on D1</span>
         <nav className="orgs" aria-label="Organisation">
           {ORGS.map((o) => (

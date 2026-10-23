@@ -5,7 +5,7 @@
 set -euo pipefail
 . "$ICELIGHT_DIR/.env"
 curl -sS -X POST "$ICELIGHT_INGEST_URL/v1/track" -H "Authorization: Bearer $ICELIGHT_INGEST_TOKEN" \
-  -H 'content-type: application/json' -d '{"userId":"d1-cube-check","event":"Proof Check"}' | jq -c .
+  -H 'content-type: application/json' -d '{"userId":"basin-cube","event":"Proof Check"}' | jq -c .
 # Through his cube API, as his UI and MCP query. A range ending now is a new query every run, so his KV cache can't serve it.
 now=$(date -u +%Y-%m-%dT%H:%M:%S)
 count=$(curl -sS -X POST "$ICELIGHT_QUERY_URL/cubejs-api/v1/load" -H 'content-type: application/json' \

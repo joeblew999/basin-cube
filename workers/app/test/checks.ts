@@ -1,4 +1,4 @@
-// d1-cube-check: does drizzle-cube run on Cloudflare D1 (via drizzle-orm/d1)?
+// basin-cube: does drizzle-cube run on Cloudflare D1 (via drizzle-orm/d1)?
 // By default the cube app runs in Node against Miniflare's D1, seeded from migrations/.
 // With TEST_URL set (e.g. http://localhost:8787) the same checks go to a running Worker.
 import { readFileSync } from 'node:fs'
