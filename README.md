@@ -94,6 +94,7 @@ The root only orchestrates. Each phase runs one verb (setup, build, test, deploy
 ## More
 
 - [PLAN.md](PLAN.md): the proofs, what's next, what's out of scope
+- [CLAUDE.md](CLAUDE.md): rules for Claude Code working in this repo
 - [docs/](docs/README.md): one folder per component. Each has a generated `tasks.md` (every task, can't drift) and a dated, hand-written `findings.md`:
   - [docs/app/findings.md](docs/app/findings.md): drizzle-cube on D1, the 7 checks and what we learned
   - [docs/icelight/findings.md](docs/icelight/findings.md): how icelight works, why it and not the alternatives, Basin pricing
