@@ -6,7 +6,7 @@
     "@nivo/heatmap": "^0.99.0",
     "drizzle-cube": "0.12.2",
     "drizzle-orm": "^0.45.4",
-    "hono": "^4",
+    "hono": "^4.13.13",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-grid-layout": "^2.3.0"
@@ -16,7 +16,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "miniflare": "^4",
+    "miniflare": "^4.20260730.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",

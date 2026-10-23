@@ -13,12 +13,12 @@ importers:
         version: 0.99.0(react@19.3.1)
       drizzle-cube:
         specifier: 0.12.2
-        version: 0.12.2(@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1)))(@nivo/heatmap@0.99.0(react@19.3.1))(cors@2.8.6)(d3@7.9.0)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1))(express@5.3.0)(hono@4.13.13)(react-dom@19.3.1(react@19.3.1))(react-grid-layout@2.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(recharts@3.10.1(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1))
+        version: 0.12.2(@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4))(@nivo/heatmap@0.99.0(react@19.3.1))(cors@2.8.6)(d3@7.9.0)(drizzle-orm@0.45.4)(express@5.3.0)(hono@4.13.13)(react-dom@19.3.1(react@19.3.1))(react-grid-layout@2.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(recharts@3.10.1(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1))
       drizzle-orm:
         specifier: ^0.45.4
-        version: 0.45.4(@cloudflare/workers-types@5.20261022.1)
+        version: 0.45.4
       hono:
-        specifier: ^4
+        specifier: ^4.13.13
         version: 4.13.13
       react:
         specifier: ^19.3.1
@@ -43,7 +43,7 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(tsx@4.23.15))
       miniflare:
-        specifier: ^4
+        specifier: ^4.20260730.0
         version: 4.20260730.0
       tsx:
         specifier: ^4.23.15
@@ -56,7 +56,7 @@ importers:
         version: 8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(tsx@4.23.15)
       wrangler:
         specifier: ^4.151.3
-        version: 4.151.3(@cloudflare/workers-types@5.20261022.1)
+        version: 4.151.3
 
 packages:
 
@@ -132,9 +132,6 @@ packages:
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
-
-  '@cloudflare/workers-types@5.20261022.1':
-    resolution: {integrity: sha512-irp6lxKgWTnIquva6iSaJhV9vCdGlhLIw3+vVOj1Glge38LnKb3jMQiB53gaUB+EgN47JVVg58kJ703V/00JYw==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2341,9 +2338,6 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20261019.1':
     optional: true
 
-  '@cloudflare/workers-types@5.20261022.1':
-    optional: true
-
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -2687,9 +2681,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1))':
+  '@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4)':
     dependencies:
-      drizzle-orm: 0.45.4(@cloudflare/workers-types@5.20261022.1)
+      drizzle-orm: 0.45.4
       node-sql-parser: 5.4.0
     optionalDependencies:
       '@duckdb/node-api': 1.4.4-r.4
@@ -3317,7 +3311,7 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  drizzle-cube@0.12.2(@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1)))(@nivo/heatmap@0.99.0(react@19.3.1))(cors@2.8.6)(d3@7.9.0)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1))(express@5.3.0)(hono@4.13.13)(react-dom@19.3.1(react@19.3.1))(react-grid-layout@2.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(recharts@3.10.1(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)):
+  drizzle-cube@0.12.2(@leonardovida-md/drizzle-neo-duckdb@1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4))(@nivo/heatmap@0.99.0(react@19.3.1))(cors@2.8.6)(d3@7.9.0)(drizzle-orm@0.45.4)(express@5.3.0)(hono@4.13.13)(react-dom@19.3.1(react@19.3.1))(react-grid-layout@2.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(recharts@3.10.1(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)):
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.1(zod@4.6.7)
       '@tanstack/react-query': 5.104.5(@types/react@19.3.0)(react@19.3.1)
@@ -3332,10 +3326,10 @@ snapshots:
       zustand: 5.0.15(@types/react@19.3.0)(immer@11.2.7)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     optionalDependencies:
       '@duckdb/node-api': 1.4.4-r.4
-      '@leonardovida-md/drizzle-neo-duckdb': 1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1))
+      '@leonardovida-md/drizzle-neo-duckdb': 1.5.2(@duckdb/node-api@1.4.4-r.4)(drizzle-orm@0.45.4)
       '@nivo/heatmap': 0.99.0(react@19.3.1)
       cors: 2.8.6
-      drizzle-orm: 0.45.4(@cloudflare/workers-types@5.20261022.1)
+      drizzle-orm: 0.45.4
       express: 5.3.0(supports-color@10.2.2)
       hono: 4.13.13
       react: 19.3.1
@@ -3348,9 +3342,7 @@ snapshots:
       - solid-js
       - vue
 
-  drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261022.1):
-    optionalDependencies:
-      '@cloudflare/workers-types': 5.20261022.1
+  drizzle-orm@0.45.4: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -4111,7 +4103,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20261019.1
       '@cloudflare/workerd-windows-64': 1.20261019.1
 
-  wrangler@4.151.3(@cloudflare/workers-types@5.20261022.1):
+  wrangler@4.151.3:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20261019.1)
@@ -4122,7 +4114,6 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20261019.1
     optionalDependencies:
-      '@cloudflare/workers-types': 5.20261022.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil

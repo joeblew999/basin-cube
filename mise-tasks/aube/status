@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="aube's paths, store check, real disk use (compare df's free space: du counts APFS clones in full), and what aube:clean would remove"
+#MISE description="aube's paths, store check, real disk use (compare df's free space: du counts APFS clones in full), what aube:clean would remove, and which packages have newer releases (app:setup --latest upgrades them)"
 #MISE timeout="2m"
 #MISE hide=true
 #MISE dir="{{env.APP_DIR}}"
@@ -10,3 +10,5 @@ aube store status
 echo "free space: $(df -h "$HOME" | awk 'NR==2{print $4}')"
 du -sh ~/.local/share/aube/store/v1 ~/.cache/aube/virtual-store/v1 node_modules 2>/dev/null || true
 aube store prune --dry-run
+echo "== packages with newer releases (app:setup --latest upgrades them)"
+aube outdated || true

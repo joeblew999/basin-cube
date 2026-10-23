@@ -66,6 +66,8 @@ To start from zero, run `6:teardown` and `0:clean`, then `1:setup` through `5:st
 mise run app:dev                 # this repo's Worker + UI on http://localhost:8787 (add --ui for Vite hot reload)
 mise run app:query '{"measures":["Bookings.revenue"],"dimensions":["Bookings.coach"]}' --org org-a
 mise run 5:status                # every URL and what's up
+mise run aube:status             # includes which packages have newer releases
+mise run app:setup --latest      # upgrade them (aube update --latest), then run 3:test
 ```
 
 The UI is drizzle-cube's query builder. The buttons top right switch organisation (tenant): `remy` has 400 demo bookings, and `org-a` and `org-b` hold the rows the checks use.

@@ -14,7 +14,7 @@ Each task shows its flags and arguments. "(listed)" means `mise tasks` shows it.
 | `app:deploy` | Create the Cloudflare D1 database if it's missing (writing its ID into wrangler.jsonc), migrate it, deploy the Worker to https://basin-cube.gedw99.workers.dev | `app:build` | 10m | `mise-tasks/app/deploy` |
 | `app:dev [--ui]` (listed) | Run this repo's Worker + UI on http://localhost:8787 (Ctrl-C to stop); --ui runs Vite hot reload on http://localhost:5173 against it | `app:build` |  | `mise-tasks/app/dev` |
 | `app:query [--org <org>] <json>` (listed) | Ask the running app:dev a cube query and print the rows |  | 1m | `mise-tasks/app/query` |
-| `app:setup` | Install this repo's dependencies with aube and migrate the local D1 database (.wrangler/state) |  | 5m | `mise-tasks/app/setup` |
+| `app:setup [--latest]` | Install this repo's dependencies with aube and migrate the local D1 database (.wrangler/state); --latest first upgrades every package to its newest release |  | 5m | `mise-tasks/app/setup` |
 | `app:status` | This repo's Worker: its URLs and whether each answers, its dashboard pages, and (when app:dev runs) its cubes and MCP tools |  | 1m | `mise-tasks/app/status` |
 | `app:teardown` | Delete this repo's Worker and its D1 database from Cloudflare (demo data). app:deploy recreates both |  | 5m | `mise-tasks/app/teardown` |
 | `app:test [--dev] [--prod]` | Types, the 7 checks in Node, then the 7 checks over HTTP in a temporary Worker on 8788; --dev tests the running app:dev, --prod tests https://basin-cube.gedw99.workers.dev | `app:build` | 5m | `mise-tasks/app/test` |

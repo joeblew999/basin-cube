@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-#MISE description="Install this repo's dependencies with aube and migrate the local D1 database (.wrangler/state)"
+#MISE description="Install this repo's dependencies with aube and migrate the local D1 database (.wrangler/state); --latest first upgrades every package to its newest release"
 #MISE timeout="5m"
 #MISE hide=true
 #MISE dir="{{env.APP_DIR}}"
+#USAGE flag "--latest" help="First upgrade every package past its range to its newest release (aube update --latest). aube holds back anything published in the last 24 hours or that lost its trusted-publisher proof. Run 3:test after"
 set -euo pipefail
+if [ "${usage_latest:-false}" = "true" ]; then aube update --latest; fi
 aube install
 # CI=1 only answers wrangler's "continue?" prompt. Don't set it for aube: it turns shared folders off.
 CI=1 aube exec wrangler d1 migrations apply "$APP_NAME" --local

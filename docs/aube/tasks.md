@@ -10,4 +10,4 @@ Each task shows its flags and arguments. "(listed)" means `mise tasks` shows it.
 | Task | What it does | Runs first | Timeout | File |
 |---|---|---|---|---|
 | `aube:clean` | Prune aube's shared store of packages no project uses any more |  | 5m | `mise-tasks/aube/clean` |
-| `aube:status` | aube's paths, store check, real disk use (compare df's free space: du counts APFS clones in full), and what aube:clean would remove |  | 2m | `mise-tasks/aube/status` |
+| `aube:status` | aube's paths, store check, real disk use (compare df's free space: du counts APFS clones in full), what aube:clean would remove, and which packages have newer releases (app:setup --latest upgrades them) |  | 2m | `mise-tasks/aube/status` |
