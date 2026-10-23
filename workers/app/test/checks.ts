@@ -15,7 +15,8 @@ let request: (path: string, init?: RequestInit) => Promise<Response>
 let mf: Miniflare | undefined
 if (TEST_URL) {
   console.log(`Worker at ${TEST_URL}\n`)
-  request = (path, init) => fetch(new URL(path, TEST_URL), asOrg(init))
+  // A Worker that accepts the connection but never answers fails the check instead of hanging the task.
+  request = (path, init) => fetch(new URL(path, TEST_URL), { ...asOrg(init), signal: AbortSignal.timeout(30_000) })
 } else {
   mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: ['DB'] })
   const d1 = await mf.getD1Database('DB')
