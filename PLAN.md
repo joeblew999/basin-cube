@@ -2,6 +2,8 @@
 
 Prove that cliftonc's code works for us, on our Cloudflare account, and show off what it gives us: drizzle-cube for querying (API, MCP, React components) and icelight for Basin. We change none of his code. Why his and not someone else's: [docs/icelight/findings.md](docs/icelight/findings.md).
 
+How developers and CI get Cloudflare credentials, here and then in every repo: [docs/cloudflare-properly.md](docs/cloudflare-properly.md).
+
 ## What it gives us
 
 From drizzle-cube's and icelight's own READMEs. Each feature gets shown off on demo data:
