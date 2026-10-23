@@ -9,6 +9,17 @@ All our projects will keep their analytics on **Cloudflare Basin** (Pipelines in
 
 **This repo proves that his code works for us, unchanged, on our Cloudflare account:** drizzle-cube on our live data in D1, icelight on Basin, then both together. Why his code and not something else: [docs/icelight/findings.md](docs/icelight/findings.md).
 
+## What you get
+
+Everything here comes built into cliftonc's code; we don't rebuild any of it. The full list, and how each piece gets shown off, is in [PLAN.md](PLAN.md#what-it-gives-us).
+
+- **Collect:** Segment/RudderStack-compatible event ingest, so existing analytics SDKs work unchanged. A drop-in for Google Analytics or Mixpanel, on our own account.
+- **Store:** Iceberg tables on R2 through Basin: free ingest, cheap queries, an open format. Live data stays in D1.
+- **Explore:** a point-and-click query builder with 26 chart types, funnel, flow and retention analysis, dashboards, and a Basin SQL editor.
+- **Ask AI:** an MCP server built in, so Claude can answer questions about the data, including charts in the chat. Plus a Claude Code plugin and an AI notebook.
+- **Build on it:** one semantic layer (measures, dimensions, joins) behind a Cube.js-compatible REST API.
+- **Keep it safe:** each tenant only ever sees its own data, in the API, the UI and MCP.
+
 ## Where it stands
 
 | | Proof | Status |
