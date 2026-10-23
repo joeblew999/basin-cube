@@ -1,5 +1,7 @@
 # basin-cube
 
+[![test](https://github.com/joeblew999/basin-cube/actions/workflows/test.yml/badge.svg)](https://github.com/joeblew999/basin-cube/actions/workflows/test.yml): README's "Get started" and `3:test` on fresh Linux and macOS machines.
+
 ## Why this repo exists
 
 All our projects will keep their analytics on **Cloudflare Basin** (Pipelines into Iceberg tables on R2, queried with Basin SQL). We don't want to write that ourselves. [cliftonc](https://github.com/cliftonc) has already built the pieces, MIT licensed:
