@@ -28,8 +28,8 @@ echo "== $repo, as a fresh machine sees it"
 bare mise config ls
 
 # What the repo needs: tools its tasks call (comments and descriptions are prose, so skipped), plus a
-# runtime for each kind of project file git tracks.
-text=$(cat /dev/null $(git ls-files 'mise.toml' '.mise.toml' 'mise-tasks/*' '.mise/tasks/*' 'mise/tasks/*') |
+# runtime for each kind of project file git tracks. This task's own folder is skipped: its tool list isn't a call.
+text=$(cat /dev/null $(git ls-files 'mise.toml' '.mise.toml' 'mise-tasks/*' '.mise/tasks/*' 'mise/tasks/*' ':(exclude)mise-tasks/tools/*') |
   grep -vE '^[[:space:]]*#|^[[:space:]]*description[[:space:]]*=' || true)
 need=""
 for t in $tools; do
