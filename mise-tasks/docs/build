@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#MISE description="Regenerate every docs/**/tasks.md from the tasks themselves: docs/tasks.md (phases, docs) and one per component in mise-tasks/"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+for target in root $(doc_components); do
+  path=$(doc_path "$target")
+  mkdir -p "$(dirname "$path")"
+  doc_page "$target" > "$path"
+  echo "regenerated $path"
+done

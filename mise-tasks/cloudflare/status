@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#MISE description="Check your Cloudflare credentials: wrangler login, account ID and dev token in fnox, that the token can create account tokens, and the Workers Paid plan. Says what's missing"
+#MISE timeout="2m"
+#MISE hide=true
+#MISE depends=["app:setup"]
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+missing=0
+ok()  { echo "  ok       $1"; }
+bad() { echo "  MISSING  $1"; missing=$((missing + 1)); }
+echo "cloudflare (your credentials)"
+
+who=$(wrangler_whoami)
+if [ "$(jq -r '.loggedIn // false' <<<"${who:-{\}}")" = true ]; then ok "wrangler login: $(jq -r .email <<<"$who")"; else bad "wrangler login"; fi
+
+account=$(fnox_secret CLOUDFLARE_ACCOUNT_ID)
+if [ -z "$account" ]; then
+  bad "CLOUDFLARE_ACCOUNT_ID in fnox"
+elif [ -n "$who" ] && ! jq -e --arg a "$account" '.accounts[]? | select(.id == $a)' <<<"$who" > /dev/null; then
+  bad "wrangler is logged in to a different account than $account"
+else
+  ok "account: $account"
+fi
+
+token=$(fnox_secret CLOUDFLARE_API_TOKEN)
+if [ -z "$token" ]; then
+  bad "dev token (CLOUDFLARE_API_TOKEN) in fnox"
+elif [ "$(cf_api "$token" /user/tokens/verify | jq -r '.result.status // "invalid"')" != active ]; then
+  bad "dev token is not active"
+else
+  ok "dev token: active"
+  if [ -n "$account" ]; then
+    if [ "$(cf_api "$token" "/accounts/$account/tokens?per_page=1" | jq -r .success)" = true ]; then ok "dev token can create account tokens"
+    else bad "dev token can't create account tokens (it needs Account API Tokens Edit)"; fi
+    plans=$(cf_api "$token" "/accounts/$account/subscriptions")
+    if [ "$(jq -r .success <<<"$plans")" != true ]; then echo "  unknown  Workers Paid plan (the dev token has no Billing Read to check it)"
+    elif jq -e '.result[] | select(.rate_plan.id == "workers_paid")' <<<"$plans" > /dev/null; then ok "Workers Paid plan"
+    else bad "Workers Paid plan (Basin Pipelines need it): $CF_DASH_URL/workers-and-pages"; fi
+  fi
+fi
+echo "  tokens   yours: https://dash.cloudflare.com/profile/api-tokens   account: $CF_DASH_URL/api-tokens"
+if [ "$missing" -gt 0 ]; then echo "$missing missing. Fix with: mise run cloudflare:setup" >&2; exit 1; fi

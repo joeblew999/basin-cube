@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Send one event to icelight's ingest Worker, then count events through his cube API (drizzle-cube on Basin). The date range ends now, so his one-hour cache can't answer. New events show after the next sink roll, about 2 minutes"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+. "$ICELIGHT_DIR/.env"
+curl -sS -X POST "$ICELIGHT_INGEST_URL/v1/track" -H "Authorization: Bearer $ICELIGHT_INGEST_TOKEN" \
+  -H 'content-type: application/json' -d '{"userId":"d1-cube-check","event":"Proof Check"}' | jq -c .
+# Through his cube API, as his UI and MCP query. A range ending now is a new query every run, so his KV cache can't serve it.
+now=$(date -u +%Y-%m-%dT%H:%M:%S)
+count=$(curl -sS -X POST "$ICELIGHT_QUERY_URL/cubejs-api/v1/load" -H 'content-type: application/json' \
+  -d "{\"query\":{\"measures\":[\"Events.count\"],\"timeDimensions\":[{\"dimension\":\"Events.timestamp\",\"dateRange\":[\"2000-01-01T00:00:00\",\"$now\"]}]}}" \
+  | jq -r '.results[0].data[0]["Events.count"] // "none"')
+echo "events through his cube API: $count"
+[ "$count" != none ] && [ "$count" -gt 0 ] || { echo "no events yet; they show after the next sink roll, about 2 minutes" >&2; exit 1; }
+echo "icelight UI: $ICELIGHT_QUERY_URL"

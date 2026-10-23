@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#MISE description="icelight: its URLs, whether each answers, and its Cloudflare dashboard pages"
+#MISE timeout="1m"
+#MISE hide=true
+#MISE quiet=true
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+echo "icelight"
+echo "  query API + UI  $ICELIGHT_QUERY_URL   $(url_state "$ICELIGHT_QUERY_URL")"
+echo "  event ingest    $ICELIGHT_INGEST_URL   $(url_state "$ICELIGHT_INGEST_URL")"
+echo "  R2 buckets      $CF_DASH_URL/r2/overview"
+echo "  clone           $ICELIGHT_DIR at $ICELIGHT_REF $([ -d "$ICELIGHT_DIR" ] && echo present || echo 'missing (mise run icelight:setup)')"

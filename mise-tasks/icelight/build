@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Build icelight's packages and query UI, which its own launch doesn't build"
+#MISE timeout="10m"
+#MISE hide=true
+#MISE depends=["icelight:setup"]
+set -euo pipefail
+cd "$ICELIGHT_DIR"
+pnpm --filter "./packages/*" build   # @icelight/core and sql-guard ship as dist/
+cd workers/query-api/ui && npm run build

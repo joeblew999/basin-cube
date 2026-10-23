@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="Whether the `icelight` token exists in Cloudflare, is in fnox, and is active"
+#MISE timeout="2m"
+#MISE hide=true
+#MISE quiet=true
+set -euo pipefail
+. "$(dirname "$0")/../.helpers.sh"
+load_secrets "$@"
+api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens"
+count=$(curl -sf -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api?per_page=50" | jq '[.result[] | select(.name == "icelight")] | length')
+echo "icelight tokens in Cloudflare: $count"
+if [ -n "${ICELIGHT_API_TOKEN:-}" ]; then
+  echo "ICELIGHT_API_TOKEN in fnox: yes ($(curl -s -H "Authorization: Bearer $ICELIGHT_API_TOKEN" "$api/verify" | jq -r '.result.status // "invalid"'))"
+else
+  echo "ICELIGHT_API_TOKEN in fnox: no"
+fi
+echo "account tokens (icelight): $CF_DASH_URL/api-tokens"
+echo "user tokens (dev):        https://dash.cloudflare.com/profile/api-tokens"

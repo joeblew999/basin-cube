@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Install this repo's dependencies with aube and migrate the local D1 database (.wrangler/state)"
+#MISE timeout="5m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+set -euo pipefail
+aube install
+# CI=1 only answers wrangler's "continue?" prompt. Don't set it for aube: it turns shared folders off.
+CI=1 aube exec wrangler d1 migrations apply d1-cube-check --local

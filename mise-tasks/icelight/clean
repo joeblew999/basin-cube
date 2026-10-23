@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Remove the {{env.ICELIGHT_DIR}} clone (icelight:setup brings it back)"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+rm -rf "$ICELIGHT_DIR"

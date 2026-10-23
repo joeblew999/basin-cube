@@ -1,0 +1,31 @@
+{
+  "version": "0.2",
+  "language": "en,en-GB",
+  "ignorePaths": [
+    "**/node_modules",
+    "**/.wrangler",
+    "workers/icelight",
+    "workers/app/ui/dist",
+    "workers/app/aube-lock.yaml"
+  ],
+  "words": [
+    "aube",
+    "aubr",
+    "aubx",
+    "cliftonc",
+    "cubejs",
+    "databend",
+    "drizby",
+    "esac",
+    "fnox",
+    "gedw99",
+    "hogflare",
+    "icelight",
+    "joeblew",
+    "miniflare",
+    "nivo",
+    "remy",
+    "rolldown",
+    "workerd"
+  ]
+}

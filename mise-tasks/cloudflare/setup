@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#MISE description="One-time, per developer: wrangler login, your account ID into fnox, then your dev token (you create it in the dashboard and paste it). Ends with cloudflare:status"
+#MISE timeout="15m"
+#MISE depends=["app:setup"]
+#MISE raw=true
+#USAGE flag "--account <id>" help="Which account, if wrangler can see more than one"
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+
+echo "== 1. wrangler login"
+who=$(wrangler_whoami)
+if [ "$(jq -r '.loggedIn // false' <<<"${who:-{\}}")" != true ]; then
+  (cd "$APP_DIR" && env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID aube exec wrangler login)
+  who=$(wrangler_whoami)
+fi
+echo "   logged in as $(jq -r .email <<<"$who")"
+
+echo "== 2. account ID"
+account="${usage_account:-}"
+if [ -z "$account" ]; then
+  if [ "$(jq '.accounts | length' <<<"$who")" = 1 ]; then account=$(jq -r '.accounts[0].id' <<<"$who")
+  else
+    jq -r '.accounts[] | "   \(.id)  \(.name)"' <<<"$who"
+    echo "   wrangler sees several accounts. Run again with: mise run cloudflare:setup --account <id>" >&2; exit 1
+  fi
+fi
+printf '%s' "$account" | fnox set -p keychain CLOUDFLARE_ACCOUNT_ID > /dev/null
+echo "   $account stored in fnox"
+
+echo "== 3. dev token"
+token=$(fnox_secret CLOUDFLARE_API_TOKEN)
+if [ -n "$token" ] && [ "$(cf_api "$token" "/accounts/$account/tokens?per_page=1" | jq -r .success)" = true ]; then
+  echo "   already in fnox and able to create account tokens"
+else
+  dev_token_help
+  echo "   Paste it here (hidden):"
+  fnox set -p keychain CLOUDFLARE_API_TOKEN
+fi
+
+echo "== check"
+mise run cloudflare:status

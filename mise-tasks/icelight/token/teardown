@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Delete the `icelight` token in Cloudflare and remove it from fnox. icelight's query Worker uses it, so its Basin queries stop working"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+. "$(dirname "$0")/../.helpers.sh"
+load_secrets "$@"
+api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens"
+auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+for id in $(curl -sf -H "$auth" "$api?per_page=50" | jq -r '.result[] | select(.name == "icelight") | .id'); do
+  curl -sf -X DELETE -H "$auth" "$api/$id" > /dev/null && echo "deleted token icelight ($id)"
+done
+fnox remove ICELIGHT_API_TOKEN 2>/dev/null || true
+echo "check: $CF_DASH_URL/api-tokens"

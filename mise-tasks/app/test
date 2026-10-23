@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#MISE description="Types, the 7 checks in Node, then the 7 checks over HTTP in a temporary Worker on {{env.WORKER_TEST_PORT}}; --dev tests the running app:dev, --prod tests {{env.WORKER_PROD_URL}}"
+#MISE timeout="5m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+#MISE depends=["app:build"]
+#USAGE flag "--dev" help="Only the HTTP checks, against the Worker that app:dev is running"
+#USAGE flag "--prod" help="Only the HTTP checks, against the deployed Worker"
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+if [ "${usage_prod:-false}" = "true" ]; then
+  url="$WORKER_PROD_URL"
+elif [ "${usage_dev:-false}" = "true" ]; then
+  url="$WORKER_URL"
+  require_worker "$url"
+else
+  echo "== types";          aube exec tsc -p .
+  echo "== checks in Node"; aube exec tsx test/checks.ts
+  # A temporary Worker, stopped when this task exits.
+  url="http://localhost:$WORKER_TEST_PORT"
+  log=.wrangler/app-test.log
+  aube exec wrangler dev --port "$WORKER_TEST_PORT" > "$log" 2>&1 &
+  pid=$!
+  trap 'kill $pid 2>/dev/null' EXIT
+  for i in $(seq 120); do
+    curl -sf -o /dev/null "$url/cubejs-api/v1/meta" && break
+    kill -0 $pid 2>/dev/null || { cat "$log"; exit 1; }
+    sleep 0.5
+  done
+fi
+echo "== checks over HTTP: $url"
+TEST_URL="$url" aube exec tsx test/checks.ts

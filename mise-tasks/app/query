@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="Ask the running app:dev a cube query and print the rows"
+#MISE timeout="1m"
+#MISE dir="{{env.APP_DIR}}"
+#USAGE arg "<json>" help="Query, e.g. '{\"measures\":[\"Bookings.revenue\"],\"dimensions\":[\"Bookings.coach\"]}'"
+#USAGE flag "--org <org>" default="remy" help="Organisation to ask as: remy, org-a or org-b"
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+require_worker "$WORKER_URL"
+curl -sS -X POST "$WORKER_URL/cubejs-api/v1/load" -H 'content-type: application/json' \
+  -H "x-organisation-id: ${usage_org}" -d "{\"query\":${usage_json}}" | jq '.results[0].data // .'

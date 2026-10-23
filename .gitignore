@@ -1,0 +1,5 @@
+node_modules/
+.wrangler/
+.playwright-mcp/
+workers/app/ui/dist/
+workers/icelight/

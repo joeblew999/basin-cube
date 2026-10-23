@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#MISE description="Fail if any docs/**/tasks.md is out of date with the tasks, or any link in README.md, PLAN.md or docs/ points at a missing file"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+status=0
+for target in root $(doc_components); do
+  path=$(doc_path "$target")
+  if [ -f "$path" ] && [ "$(doc_page "$target")" = "$(cat "$path")" ]; then echo "$path: up to date"
+  else echo "$path: out of date. Run: mise run docs:build" >&2; status=1; fi
+done
+for md in README.md PLAN.md $(find docs -name '*.md'); do
+  dir=$(dirname "$md")
+  for link in $(grep -oE '\]\([^)]+\)' "$md" | sed -E 's/^\]\(//; s/\)$//; s/#.*//' | grep -vE '^(https?:|mailto:|$)' || true); do
+    [ -e "$dir/$link" ] || { echo "$md: broken link to $link" >&2; status=1; }
+  done
+done
+[ $status = 0 ] && echo "links: all resolve"
+exit $status

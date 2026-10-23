@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#MISE description="Prove the token lifecycle: teardown, status, setup, status. Replaces the token, so run icelight:deploy after"
+#MISE timeout="5m"
+#MISE hide=true
+#MISE quiet=true
+set -euo pipefail
+echo "== teardown";        mise run icelight:token:teardown
+echo "== after teardown";  mise run icelight:token:status
+echo "== setup";           mise run icelight:token:setup
+echo "== after setup";     mise run icelight:token:status

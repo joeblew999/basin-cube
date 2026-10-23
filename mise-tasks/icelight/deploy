@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="Deploy icelight without its interactive launch: his own steps, in his launch's order (.deploy.mts): Basin infrastructure, both Workers, 30 days of demo events. Safe to re-run"
+#MISE timeout="15m"
+#MISE hide=true
+#MISE depends=["icelight:build", "icelight:token:setup"]
+#USAGE flag "--no-seed" help="Skip the 30 days of demo events"
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+load_secrets "$@"
+here=$(cd "$(dirname "$0")" && pwd)
+write_icelight_env
+seed=true
+[ "${usage_no_seed:-false}" = "true" ] && seed=false
+(cd "$ICELIGHT_DIR" && ICELIGHT_SEED=$seed as_wrangler_login pnpm exec tsx "$here/.deploy.mts")
+echo "icelight UI: $ICELIGHT_QUERY_URL   ingest: $ICELIGHT_INGEST_URL   test it: mise run icelight:test"

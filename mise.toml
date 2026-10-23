@@ -1,0 +1,91 @@
+# d1-cube-check: proves cliftonc's drizzle-cube (on D1) and icelight (on Basin) work for us, unchanged.
+#
+# The rules for every task here. Follow them for anything new, so nobody has to refactor again:
+#
+#  1. Phases first. `mise tasks` shows the numbered phases, in order, plus the one-time cloudflare:setup and two dev helpers
+#     (app:dev, app:query):
+#       0:clean  1:setup  2:build  3:test  4:deploy  5:status  6:teardown
+#     From zero: 6:teardown (Cloudflare), 0:clean (local), then 1:setup through 5:status.
+#     A phase only orchestrates: it runs one verb across every component, in order, and does no work itself.
+#  2. Components do the work, as files: mise-tasks/<component>/<verb> (mise-tasks/icelight/token/setup is icelight:token:setup).
+#     Components: cloudflare (each developer's own credentials), app (this repo's Worker: drizzle-cube on D1), icelight (cliftonc's
+#     Basin analytics) and its token, aube (tooling), docs (the generated task reference).
+#     Each Worker's code lives in workers/<component> (APP_DIR, ICELIGHT_DIR); its tasks in mise-tasks/<component>. Same names.
+#     app and icelight mirror each other, so a phase is just "app:<verb>, then icelight:<verb>".
+#     They're hidden from `mise tasks`; `mise tasks --hidden` lists them all. A component's shell helpers live in its own folder
+#     (mise-tasks/<component>/.helpers.sh, which mise doesn't list), so each component depends on nothing outside its folder.
+#  3. Only these verbs: setup, dev, build, test, deploy, status, clean, teardown, and query (asking the running app:dev).
+#  4. Every task has a description that says what it does, with real values ({{env.X}}, not $X), declares its flags and arguments
+#     with #USAGE (so --help, tab-completion and the docs show them), and prints full URLs
+#     (https://..., dashboard links with the account ID).
+#  5. Whatever a task creates, another task removes (clean locally, teardown on Cloudflare), and a test or status proves it worked.
+#     A task works from any state: it sets up what it needs (icelight:teardown gets the clone first).
+#  6. A task declares what it needs first (#MISE depends=[...]); a phase that must run in order uses run = [{ task = "..." }].
+#     Only phases ask for confirmation; the component tasks they run don't ask again.
+#  7. Secrets come only from fnox (fnox.toml, macOS keychain): a task that needs them calls load_secrets (icelight's .helpers.sh).
+#     The one exception is icelight's own .env (in workers/icelight), which his code reads and writes. His code runs with
+#     wrangler's own login (as_wrangler_login), not our dev token.
+#  8. Nothing is interactive (except cloudflare:setup, where a developer logs in and pastes their own token once), nothing feeds
+#     keystrokes, nothing keeps running in the background. When a tool only offers prompts,
+#     call its own functions instead (icelight's launch: mise-tasks/icelight/.deploy.mts calls his steps with skipPrompts).
+#     Every task has a timeout (#MISE timeout="5m"), except app:dev, the dev server you stop with Ctrl-C.
+#  9. Settings live once, in [env], named by component (WORKER_*, ICELIGHT_*, CF_*). Task files read them; nothing is hard-coded twice.
+# 10. Docs can't drift. docs/ has one folder per component, like workers/ and mise-tasks/. Every tasks.md is generated from the
+#     tasks (docs:build, in 2:build) and docs:test (in 3:test) fails if one is stale or any link is broken. Every findings.md is
+#     hand-written and dated: what was measured, never the layout or task names.
+#     README.md says why the repo exists and how to start; change it in the same change as anything it mentions.
+
+[tools]
+node = "26.11.1"
+aube = "2.8.1"   # aube owns this repo's JS packages (aube-lock.yaml). Pin exactly: "2" picked an old 2.2.17
+jq = "1.8.2"
+fnox = "1.40.0"
+pnpm = "9.15.4"  # only for icelight, which pins it as its packageManager
+usage = "7.0.1"  # tab-completion and --help for tasks and their flags (#USAGE lines)
+
+[env]
+# This repo's Worker (the app component), in workers/app
+APP_DIR = "workers/app"
+WORKER_PORT = "8787"                                          # app:dev
+WORKER_URL = "http://localhost:{{env.WORKER_PORT}}"
+WORKER_TEST_PORT = "8788"                                     # app:test's temporary Worker, so it works next to app:dev
+WORKER_PROD_URL = "https://d1-cube-check.gedw99.workers.dev"  # app:deploy
+# cliftonc's icelight, cloned unchanged into workers/icelight
+ICELIGHT_DIR = "workers/icelight"
+ICELIGHT_REF = "901cfdc"
+ICELIGHT_INGEST_URL = "https://icelight-event-ingest.gedw99.workers.dev"
+ICELIGHT_QUERY_URL = "https://icelight-query-api.gedw99.workers.dev"
+# Cloudflare dashboard for our account (the account ID isn't secret)
+CF_DASH_URL = "https://dash.cloudflare.com/7384af54e33b8a54ff240371ea368440"
+
+# === phases ==========================================================================
+
+[tasks."0:clean"]
+description = "Remove everything local that setup and build make: app (node_modules, ui/dist, local D1 data), then the workers/icelight clone"
+confirm = "Remove node_modules, ui/dist, local D1 data and workers/icelight?"
+run = [{ task = "app:clean" }, { task = "icelight:clean" }]
+
+[tasks."1:setup"]
+description = "Get everything ready: check your Cloudflare credentials first, then app, icelight, icelight's token. Ends with 5:status"
+run = [{ task = "cloudflare:status" }, { task = "app:setup" }, { task = "icelight:setup" }, { task = "icelight:token:setup" }, { task = "5:status" }]
+
+[tasks."2:build"]
+description = "Build everything: app (its UI), icelight (its packages and UI), then docs (the generated task reference)"
+run = [{ task = "app:build" }, { task = "icelight:build" }, { task = "docs:build" }]
+
+[tasks."3:test"]
+description = "Every test that needs no deployment: app (types, 7 checks in Node, 7 in a temporary Worker), then docs (up to date, no broken links)"
+run = [{ task = "app:test" }, { task = "docs:test" }]
+
+[tasks."4:deploy"]
+description = "Deploy everything to Cloudflare, in order: app (its Worker and D1 database), then icelight (Basin, both Workers, demo events)"
+run = [{ task = "app:deploy" }, { task = "icelight:deploy" }]
+
+[tasks."5:status"]
+description = "Your Cloudflare credentials, every URL, and whether each Worker answers: app, icelight, icelight's token"
+run = [{ task = "cloudflare:status" }, { task = "app:status" }, { task = "icelight:status" }, { task = "icelight:token:status" }]
+
+[tasks."6:teardown"]
+description = "Remove everything from Cloudflare, in order: icelight (its resources, data and token), then app (its Worker and D1 database)"
+confirm = "Remove icelight, its token, the d1-cube-check Worker and its D1 database from Cloudflare?"
+run = [{ task = "icelight:teardown" }, { task = "app:teardown" }]

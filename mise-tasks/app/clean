@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Remove what app:setup and app:build make locally: node_modules, ui/dist, the local D1 data. Keeps aube's shared store"
+#MISE timeout="2m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+set -euo pipefail
+aube clean
+rm -rf node_modules ui/dist .wrangler/state/v3/d1   # aube clean leaves its own lock copy and a cache behind

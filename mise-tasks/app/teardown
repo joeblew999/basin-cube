@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#MISE description="Delete this repo's Worker and its D1 database from Cloudflare (demo data). app:deploy recreates both"
+#MISE timeout="5m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+set -euo pipefail
+if aube exec wrangler deployments list > /dev/null 2>&1; then
+  CI=1 aube exec wrangler delete --force
+else
+  echo "Worker d1-cube-check: already gone"
+fi
+if aube exec wrangler d1 list --json 2>/dev/null | jq -e '.[] | select(.name == "d1-cube-check")' > /dev/null; then
+  CI=1 aube exec wrangler d1 delete d1-cube-check --skip-confirmation
+else
+  echo "D1 database d1-cube-check: already gone"
+fi
+echo "check: $CF_DASH_URL/workers-and-pages   $CF_DASH_URL/workers/d1"

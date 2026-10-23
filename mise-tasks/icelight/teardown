@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#MISE description="Run icelight's own `pnpm teardown --confirm` (deletes everything its launch created, event data included), then its token. Creates a token first if there isn't one, since his teardown needs it"
+#MISE timeout="10m"
+#MISE hide=true
+#MISE depends=["icelight:setup", "icelight:token:setup"]
+#MISE depends_post=["icelight:token:teardown"]
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+load_secrets "$@"
+# His teardown needs a valid token to drop the Basin Catalog tables; without them the bucket can't be deleted.
+write_icelight_env
+cd "$ICELIGHT_DIR" && as_wrangler_login pnpm teardown --confirm

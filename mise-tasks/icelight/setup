@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="Clone icelight at {{env.ICELIGHT_REF}} into {{env.ICELIGHT_DIR}} and install its dependencies (https://github.com/cliftonc/icelight)"
+#MISE timeout="10m"
+#MISE hide=true
+set -euo pipefail
+[ -d "$ICELIGHT_DIR" ] || git clone -q https://github.com/cliftonc/icelight "$ICELIGHT_DIR"
+git -C "$ICELIGHT_DIR" fetch -q origin
+git -C "$ICELIGHT_DIR" checkout -q "$ICELIGHT_REF"
+cd "$ICELIGHT_DIR"
+pnpm install --frozen-lockfile
+cd workers/query-api/ui && npm ci --no-audit --no-fund

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="Create the `icelight` account token (Basin Catalog Edit, Basin SQL Read, R2 Storage Edit, Workers Scripts Read), store it in fnox. Skips if present"
+#MISE timeout="2m"
+#MISE hide=true
+set -euo pipefail
+. "$(dirname "$0")/../.helpers.sh"
+load_secrets "$@"
+if [ -n "${ICELIGHT_API_TOKEN:-}" ]; then echo "ICELIGHT_API_TOKEN already in fnox"; exit 0; fi
+api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens"
+auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"   # the dev token: needs Account API Tokens Write
+names='["Workers R2 Data Catalog Write","Workers R2 SQL Read","Workers R2 Storage Write","Workers Scripts Read"]'
+groups=$(curl -sf -H "$auth" "$api/permission_groups" | jq -c --argjson names "$names" '[.result[] | select(.name as $n | $names | index($n)) | {id}]')
+[ "$(jq length <<<"$groups")" = 4 ] || { echo "could not find all 4 permission groups" >&2; exit 1; }
+body=$(jq -n --arg acc "com.cloudflare.api.account.$CLOUDFLARE_ACCOUNT_ID" --argjson groups "$groups" \
+  '{name: "icelight", policies: [{effect: "allow", resources: {($acc): "*"}, permission_groups: $groups}]}')
+curl -sf -X POST -H "$auth" -H 'content-type: application/json' "$api" -d "$body" | jq -er .result.value \
+  | fnox set -p keychain ICELIGHT_API_TOKEN
+echo "created token 'icelight' and stored ICELIGHT_API_TOKEN in fnox: $CF_DASH_URL/api-tokens"

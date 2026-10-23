@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Prune aube's shared store of packages no project uses any more"
+#MISE timeout="5m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+#MISE confirm="Prune aube's shared store?"
+set -euo pipefail
+aube store prune

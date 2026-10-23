@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Run this repo's Worker + UI on {{env.WORKER_URL}} (Ctrl-C to stop); --ui runs Vite hot reload on http://localhost:5173 against it"
+#MISE dir="{{env.APP_DIR}}"
+#MISE depends=["app:build"]
+#MISE raw=true
+#USAGE flag "--ui" help="Run Vite with hot reload on http://localhost:5173 instead; start app:dev in another terminal first"
+set -euo pipefail
+if [ "${usage_ui:-false}" = "true" ]; then exec aube exec vite; fi
+exec aube exec wrangler dev --port "$WORKER_PORT"

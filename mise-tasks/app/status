@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#MISE description="This repo's Worker: its URLs and whether each answers, its dashboard pages, and (when app:dev runs) its cubes and MCP tools"
+#MISE timeout="1m"
+#MISE hide=true
+#MISE dir="{{env.APP_DIR}}"
+#MISE quiet=true
+set -euo pipefail
+. "$(dirname "$0")/.helpers.sh"
+echo "app (this repo's Worker)"
+echo "  deployed     $WORKER_PROD_URL   $(url_state "$WORKER_PROD_URL")"
+echo "  local        $WORKER_URL   $(url_state "$WORKER_URL")   (mise run app:dev)"
+echo "  Workers      $CF_DASH_URL/workers-and-pages"
+echo "  D1           $CF_DASH_URL/workers/d1"
+if curl -sf -o /dev/null "$WORKER_URL/cubejs-api/v1/meta"; then
+  echo "  cubes:"
+  curl -sS "$WORKER_URL/cubejs-api/v1/meta" | jq -r '.cubes[] | "    \(.name): measures \([.measures[].name] | join(", ")); dimensions \([.dimensions[].name] | join(", "))"'
+  echo "  MCP tools at $WORKER_URL/mcp: $(curl -sS -X POST "$WORKER_URL/mcp" -H 'content-type: application/json' \
+    -H 'accept: application/json, text/event-stream' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | jq -r '[.result.tools[].name] | join(", ")')"
+fi
