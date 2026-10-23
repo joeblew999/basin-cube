@@ -32,7 +32,7 @@ What's next, and what's deliberately out of scope: [PLAN.md](PLAN.md).
 
 ## Get started
 
-You need [mise](https://mise.jdx.dev). It installs every other tool this repo uses at pinned versions: Node, aube, fnox, jq, and pnpm for icelight.
+You need [mise](https://mise.jdx.dev). It installs every other tool this repo uses at pinned versions: Node, aube, fnox, jq, and pnpm for icelight. Nothing comes from your own machine's mise config: `mise run tools:test` proves it, and [CI](.github/workflows/test.yml) runs these steps and `3:test` on fresh Linux and macOS machines.
 
 ```sh
 mise trust && mise install
@@ -51,7 +51,7 @@ Everything else is mise, in numbered phases. `mise tasks` lists them in this ord
 ```sh
 mise run 1:setup      # checks your credentials, then dependencies, local D1, icelight's clone, its token; ends with 5:status
 mise run 2:build      # this repo's UI, icelight's packages and UI
-mise run 3:test       # types, the 7 checks in Node, the 7 checks in a temporary Worker
+mise run 3:test       # types, the 7 checks in Node, the 7 checks in a temporary Worker, docs, tools from mise.toml only
 mise run 4:deploy     # this repo's Worker and D1 database, then icelight (Basin, both Workers, demo events)
 mise run 5:status     # your credentials, every URL, and whether each Worker is up
 mise run 6:teardown   # remove everything from Cloudflare
@@ -77,7 +77,7 @@ workers/
   app/        this repo's Worker (basin-cube): src/, ui/, migrations/, test/checks.ts, wrangler.jsonc
   icelight/   cliftonc's repo, cloned unchanged at a pinned commit (git-ignored)
 mise-tasks/
-  app/  icelight/  aube/    one file per task, named after the Worker it works on
+  app/  icelight/  aube/  tools/    one file per task, named after the Worker or tool it works on
 mise.toml     the rules every task follows, the settings, and the phases
 fnox.toml     which keychain secrets tasks may load
 docs/         per component: generated tasks.md, dated findings.md
@@ -89,6 +89,7 @@ The root only orchestrates. Each phase runs one verb (setup, build, test, deploy
 
 - **Demo data only.** The organisation comes from an `x-organisation-id` header that anyone can set, so it isn't safe for real data.
 - **Versions are pinned:** tools in `mise.toml`, JS packages in `workers/app/aube-lock.yaml`, icelight by `ICELIGHT_REF`.
+- **Your own mise config doesn't count.** Every tool a task calls is pinned here, so the repo works the same on a fresh machine as on yours (rule 11 in [mise.toml](mise.toml)).
 - **Secrets only come from fnox** (the macOS keychain), never from files in this repo.
 
 ## More
@@ -99,3 +100,4 @@ The root only orchestrates. Each phase runs one verb (setup, build, test, deploy
   - [docs/app/findings.md](docs/app/findings.md): drizzle-cube on D1, the 7 checks and what we learned
   - [docs/icelight/findings.md](docs/icelight/findings.md): how icelight works, why it and not the alternatives, Basin pricing
   - [docs/aube/findings.md](docs/aube/findings.md): aube measured against npm
+  - [docs/tools/findings.md](docs/tools/findings.md): what a global mise config hid, here and across the other repos

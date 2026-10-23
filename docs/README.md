@@ -11,3 +11,4 @@ Organised like `workers/` and `mise-tasks/`: one folder per component, with the 
 | `app`: this repo's Worker, drizzle-cube on D1 | [app/tasks.md](app/tasks.md) | [app/findings.md](app/findings.md) |
 | `icelight`: cliftonc's Basin analytics, and its token | [icelight/tasks.md](icelight/tasks.md) | [icelight/findings.md](icelight/findings.md) |
 | `aube`: the package manager | [aube/tasks.md](aube/tasks.md) | [aube/findings.md](aube/findings.md) |
+| `tools`: proves this repo needs nothing from your machine | [tools/tasks.md](tools/tasks.md) | [tools/findings.md](tools/findings.md) |

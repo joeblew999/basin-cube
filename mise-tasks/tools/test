@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#MISE description="Prove a fresh machine needs only mise: with no global mise config and a bare PATH, every tool the tasks call (and Node, Go or Rust when the repo has package.json, go.mod or Cargo.toml) comes from the repo's own mise config"
+#MISE timeout="2m"
+#MISE hide=true
+#USAGE arg "[repo]" help="Check another repo (its path) instead of this one"
+set -euo pipefail
+repo=$(cd "${usage_repo:-.}" && pwd)
+
+# Tools a global mise config (or Homebrew) tends to provide, so a repo can call them without pinning them.
+# Tools from node_modules (wrangler, tsx) are the repo's own and don't count.
+tools="node npm npx pnpm aube bun bunx deno go cargo rustc gh jq yq fnox nu rg fd shellcheck"
+
+# The bare machine: PATH has only mise and the OS, the global config is empty, and nothing above the
+# repo's own folder is read (mise would otherwise find ~/.config/mise/config.toml walking up to ~).
+bare_dir=$(mktemp -d)
+trap 'rm -rf "$bare_dir"' EXIT
+ln -s "$(command -v mise)" "$bare_dir/mise"
+: >"$bare_dir/global.toml"
+bare() {
+  env -i HOME="$HOME" USER="${USER:-}" TERM=dumb PATH="$bare_dir:/usr/bin:/bin:/usr/sbin:/sbin" \
+    ${MISE_DATA_DIR:+MISE_DATA_DIR="$MISE_DATA_DIR"} ${MISE_CACHE_DIR:+MISE_CACHE_DIR="$MISE_CACHE_DIR"} \
+    MISE_GLOBAL_CONFIG_FILE="$bare_dir/global.toml" MISE_CEILING_PATHS="$(dirname "$repo")" \
+    MISE_TRUSTED_CONFIG_PATHS="$repo" MISE_EXEC_AUTO_INSTALL=0 MISE_NOT_FOUND_AUTO_INSTALL=0 "$@"
+}
+
+cd "$repo"
+echo "== $repo, as a fresh machine sees it"
+bare mise config ls
+
+# What the repo needs: tools its tasks call (comments and descriptions are prose, so skipped), plus a
+# runtime for each kind of project file git tracks.
+text=$(cat /dev/null $(git ls-files 'mise.toml' '.mise.toml' 'mise-tasks/*' '.mise/tasks/*' 'mise/tasks/*') |
+  grep -vE '^[[:space:]]*#|^[[:space:]]*description[[:space:]]*=' || true)
+need=""
+for t in $tools; do
+  printf '%s\n' "$text" | grep -qE "(^|[[:space:];&|(\`'\"])$t([[:space:];&|)\`'\"]|$)" && need+=" $t"
+done
+git ls-files | grep -qE '(^|/)package\.json$' && need+=" node"
+git ls-files | grep -qE '(^|/)go\.mod$' && need+=" go"
+git ls-files | grep -qE '(^|/)Cargo\.toml$' && need+=" cargo"
+need=$(printf '%s\n' $need | sort -u | tr '\n' ' ')
+
+echo
+echo "== where each tool it needs comes from"
+report=$(bare mise x -- sh -c 'for t in "$@"; do if p=$(command -v "$t"); then echo "ok $t $p"; else echo "MISSING $t -"; fi; done' sh $need)
+printf '%s\n' "$report" | sed "s#$HOME#~#g" | awk '{printf "%-8s %-8s %s\n", $1, $2, $3}'
+missing=$(printf '%s\n' "$report" | awk '$1 == "MISSING" {printf "%s ", $2}')
+
+if [ -n "$missing" ]; then
+  echo
+  echo "MISSING on a fresh machine: $missing" >&2
+  not_installed=$(bare mise ls --missing 2>/dev/null || true)
+  if [ -n "$not_installed" ]; then echo "Pinned but not installed here (run: mise install):" >&2; echo "$not_installed" >&2; fi
+  echo "Pin each one in [tools]. For Go and Rust, let go.mod or rust-toolchain.toml be the pin:" >&2
+  echo '  [settings] idiomatic_version_file_enable_tools = ["go", "rust"]' >&2
+  exit 1
+fi
+echo
+echo "PASS: everything this repo needs comes from its own mise config"

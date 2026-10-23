@@ -1,0 +1,31 @@
+# Proves a developer anywhere can work off this repo with nothing but mise: fresh Linux and macOS
+# machines with no mise config of their own run README's "Get started" steps, then 3:test (every test
+# that needs no Cloudflare account). Every check is a mise task, so the same commands run locally.
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  # Lets mise read GitHub releases without hitting the anonymous rate limit.
+  GITHUB_TOKEN: ${{ github.token }}
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+      # Only puts mise on PATH: installing is README's step below, after trusting the repo.
+      - uses: jdx/mise-action@v5.0.1
+        with:
+          install: false
+      # README "Get started", word for word.
+      - run: mise trust && mise install
+      - run: mise run 3:test

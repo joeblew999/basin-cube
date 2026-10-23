@@ -9,7 +9,8 @@
 #     A phase only orchestrates: it runs one verb across every component, in order, and does no work itself.
 #  2. Components do the work, as files: mise-tasks/<component>/<verb> (mise-tasks/icelight/token/setup is icelight:token:setup).
 #     Components: cloudflare (each developer's own credentials), app (this repo's Worker: drizzle-cube on D1), icelight (cliftonc's
-#     Basin analytics) and its token, aube (tooling), docs (the generated task reference).
+#     Basin analytics) and its token, aube (tooling), tools (proves this repo needs nothing from your machine),
+#     docs (the generated task reference).
 #     Each Worker's code lives in workers/<component> (APP_DIR, ICELIGHT_DIR); its tasks in mise-tasks/<component>. Same names.
 #     app and icelight mirror each other, so a phase is just "app:<verb>, then icelight:<verb>".
 #     They're hidden from `mise tasks`; `mise tasks --hidden` lists them all. A component's shell helpers live in its own folder
@@ -34,6 +35,10 @@
 #     tasks (docs:build, in 2:build) and docs:test (in 3:test) fails if one is stale or any link is broken. Every findings.md is
 #     hand-written and dated: what was measured, never the layout or task names.
 #     README.md says why the repo exists and how to start; change it in the same change as anything it mentions.
+# 11. Nothing comes from your own machine. [tools] pins every tool a task calls; a global mise config (~/.config/mise)
+#     never counts, because other developers don't have yours. Go and Rust may be pinned by go.mod or rust-toolchain.toml
+#     instead ([settings] idiomatic_version_file_enable_tools). tools:test (in 3:test) proves it with no global config
+#     and a bare PATH; CI (.github/workflows/test.yml) runs `mise trust && mise install` then 3:test on fresh Linux and macOS.
 
 [tools]
 node = "26.11.1"
@@ -75,8 +80,8 @@ description = "Build everything: app (its UI), icelight (its packages and UI), t
 run = [{ task = "app:build" }, { task = "icelight:build" }, { task = "docs:build" }]
 
 [tasks."3:test"]
-description = "Every test that needs no deployment: app (types, 7 checks in Node, 7 in a temporary Worker), then docs (up to date, no broken links)"
-run = [{ task = "app:test" }, { task = "docs:test" }]
+description = "Every test that needs no deployment: app (types, 7 checks in Node, 7 in a temporary Worker), docs (up to date, no broken links), then tools (nothing comes from your machine's own mise config)"
+run = [{ task = "app:test" }, { task = "docs:test" }, { task = "tools:test" }]
 
 [tasks."4:deploy"]
 description = "Deploy everything to Cloudflare, in order: app (its Worker and D1 database), then icelight (Basin, both Workers, demo events)"
